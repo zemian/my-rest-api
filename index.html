@@ -1,0 +1,72 @@
+<!doctype html>
+<!--
+    Author: Zemian Deng <zemiandeng@gmail.com>
+    Date: April 21, 2022
+-->
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A Simple REST API Client</title>
+    <link href="https://unpkg.com/bulma@0.9.3/css/bulma.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3.2.33/dist/vue.global.prod.js"></script>
+</head>
+<body>
+
+<div id="app" class="section">
+    <div class="container">
+        <h1 class="title">A Simple REST API Client</h1>
+
+        <div class="field">
+            <div class="control">
+                <label class="label">Regular Expression</label>
+                <input class="input" v-model="regex"></textarea>
+            </div>
+        </div>
+        <div class="field">
+            <div class="control">
+                <label class="label">Input Text</label>
+                <textarea class="textarea" v-model="inputText"></textarea>
+            </div>
+        </div>
+        <div class="field">
+            <div class="control">
+                <input class="button" type="submit" @click="onSubmit">
+            </div>
+        </div>
+
+        <div>
+            <pre v-if="response">{{JSON.stringify(response, null, 2)}}</pre>
+            <div v-if="response && response.newtext">
+                <h1 class="is-size-5 has-text-weight-bold">Rendered Text</h1>
+                <div v-html="response.newtext"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    Vue.createApp({
+        data() {
+            return {
+                regex: '/(foo)(bar)(baz)/',
+                inputText: 'foobarbaz',
+                response: null,
+                baseUrl: 'api/',
+            };
+        },
+        methods: {
+            onSubmit() {
+                const data = JSON.stringify({regex: this.regex, text: this.inputText});
+                console.log("Sending request to " + this.baseUrl);
+                fetch(this.baseUrl, {method: 'POST', body: data})
+                    .then(resp => resp.json()).then(data => {
+                    console.log("Received data", data);
+                    this.response = data;
+                });
+            }
+        }
+    }).mount('#app');
+</script>
+
+</body>
+</html>
